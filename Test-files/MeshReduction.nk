@@ -1,0 +1,164 @@
+#! C:/Program Files/Nuke14.1v8/nuke-14.1.8.dll -nx
+version 14.1 v8
+define_window_layout_xml {<?xml version="1.0" encoding="UTF-8"?>
+<layout version="1.0">
+    <window x="1" y="7" w="1704" h="900" screen="0">
+        <splitter orientation="1">
+            <split size="40"/>
+            <dock id="" hideTitles="1" activePageId="Toolbar.1">
+                <page id="Toolbar.1"/>
+            </dock>
+            <split size="1041" stretch="1"/>
+            <splitter orientation="2">
+                <split size="504"/>
+                <dock id="" activePageId="Viewer.1">
+                    <page id="Viewer.1"/>
+                </dock>
+                <split size="354"/>
+                <dock id="" activePageId="DAG.1" focus="true">
+                    <page id="DAG.1"/>
+                    <page id="Curve Editor.1"/>
+                    <page id="DopeSheet.1"/>
+                </dock>
+            </splitter>
+            <split size="615"/>
+            <dock id="" activePageId="Properties.1">
+                <page id="Properties.1"/>
+                <page id="uk.co.thefoundry.backgroundrenderview.1"/>
+                <page id="Scenegraph.1"/>
+                <page id="uk.co.thefoundry.scripteditor.2"/>
+            </dock>
+        </splitter>
+    </window>
+</layout>
+}
+Root {
+ inputs 0
+ name C:/dev/nuke-mesh-simplify/Test-files/MeshReduction.nk
+ format "2048 1556 0 0 2048 1556 1 2K_Super_35(full-ap)"
+ proxy_type scale
+ proxy_format "1024 778 0 0 1024 778 1 1K_Super_35(full-ap)"
+ colorManagement OCIO
+ defaultViewerLUT "OCIO LUTs"
+ workingSpaceLUT scene_linear
+ monitorLut "sRGB (default)"
+ monitorOutLUT "rec709 (default)"
+ int8Lut matte_paint
+ int16Lut texture_paint
+ logLut compositing_log
+ floatLut scene_linear
+}
+ColorBars {
+ inputs 0
+ name ColorBars1
+ xpos 80
+ ypos -155
+}
+set Nca48f800 [stack 0]
+Cube {
+ name Cube1
+ xpos -232
+ ypos -41
+}
+MeshSimplify {
+ target_ratio 0
+ target_error 0.422
+ uv_weight 1.75
+ lock_borders true
+ aggressive true
+ output_quads true
+ quad_angle 17.2
+ name MeshSimplify2
+ xpos -232
+ ypos 40
+}
+push $Nca48f800
+push $Nca48f800
+Sphere {
+ name Sphere1
+ xpos 218
+ ypos -87
+ disable true
+}
+MeshSimplify {
+ target_ratio 0.455
+ target_error 0.034
+ uv_weight 2.74
+ lock_borders true
+ name MeshSimplify1
+ xpos 184
+ ypos 4
+ disable true
+}
+ApplyMaterial {
+ inputs 2
+ name ApplyMaterial1
+ xpos 173
+ ypos 70
+}
+ColorBars {
+ inputs 0
+ name ColorBars2
+ xpos -627
+ ypos 33
+}
+push $Nca48f800
+Card2 {
+ inputs 0
+ rows 163
+ columns 288
+ uniform_scale 5.2
+ control_points {3 3 3 6 
+
+1 {-0.5 -0.5 0} 0 {0.1666666865 0 0} 0 {0 0 0} 0 {0 0.1666666865 0} 0 {0 0 0} 0 {0 0 0} 
+1 {0 -0.5 0} 0 {0.1666666716 0 0} 0 {-0.1666666716 0 0} 0 {0 0.1666666865 0} 0 {0 0 0} 0 {0.5 0 0} 
+1 {0.5 -0.5 0} 0 {0 0 0} 0 {-0.1666666865 0 0} 0 {0 0.1666666865 0} 0 {0 0 0} 0 {1 0 0} 
+1 {-0.5 0 0} 0 {0.1666666865 0 0} 0 {0 0 0} 0 {0 0.1666666716 0} 0 {0 -0.1666666716 0} 0 {0 0.5 0} 
+1 {0 0 0} 0 {0.1666666716 0 0} 0 {-0.1666666716 0 0} 0 {0 0.1666666716 0} 0 {0 -0.1666666716 0} 0 {0.5 0.5 0} 
+1 {0.5 0 0} 0 {0 0 0} 0 {-0.1666666865 0 0} 0 {0 0.1666666716 0} 0 {0 -0.1666666716 0} 0 {1 0.5 0} 
+1 {-0.5 0.5 0} 0 {0.1666666865 0 0} 0 {0 0 0} 0 {0 0 0} 0 {0 -0.1666666865 0} 0 {0 1 0} 
+1 {0 0.5 0} 0 {0.1666666716 0 0} 0 {-0.1666666716 0 0} 0 {0 0 0} 0 {0 -0.1666666865 0} 0 {0.5 1 0} 
+1 {0.5 0.5 0} 0 {0 0 0} 0 {-0.1666666865 0 0} 0 {0 0 0} 0 {0 -0.1666666865 0} 0 {1 1 0} }
+ name Card1
+ xpos -423
+ ypos -146
+}
+DisplaceGeo {
+ inputs 2
+ scale 1
+ name DisplaceGeo1
+ xpos -423
+ ypos -50
+}
+MeshSimplify {
+ target_ratio 0.01
+ target_error 0.047
+ uv_weight 0
+ lock_borders true
+ pin_silhouette true
+ silhouette_angle 19.5
+ aggressive true
+ output_quads true
+ quad_angle 33.8
+ name MeshSimplify3
+ xpos -431
+ ypos 40
+}
+set Nc47b7c00 [stack 0]
+ApplyMaterial {
+ inputs 2
+ name ApplyMaterial2
+ xpos -444
+ ypos 100
+}
+push $Nc47b7c00
+Viewer {
+ frame_range 1-100
+ viewerProcess "sRGB (default)"
+ gl_lighting true
+ monitorOutNDISenderName "NukeX - MeshReduction - Viewer1"
+ monitorOutOutputTransform "rec709 (default)"
+ name Viewer1
+ xpos 314
+ ypos 72
+}

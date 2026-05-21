@@ -1,0 +1,10 @@
+^C:\DEV\NUKE-MESH-SIMPLIFY\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/dev/nuke-mesh-simplify -BC:/dev/nuke-mesh-simplify/build --check-stamp-file C:/dev/nuke-mesh-simplify/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

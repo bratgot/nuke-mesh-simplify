@@ -1,0 +1,3 @@
+C:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-subbuild/CMakeFiles/meshoptimizer-populate.dir
+C:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-subbuild/CMakeFiles/ALL_BUILD.dir
+C:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-subbuild/CMakeFiles/ZERO_CHECK.dir

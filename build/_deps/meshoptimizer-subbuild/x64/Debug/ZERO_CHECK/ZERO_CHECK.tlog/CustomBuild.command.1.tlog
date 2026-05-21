@@ -1,0 +1,10 @@
+^C:\DEV\NUKE-MESH-SIMPLIFY\BUILD\_DEPS\MESHOPTIMIZER-SUBBUILD\CMAKEFILES\34DFCF10BD47A9DB5E5B19D1F087545C\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-subbuild -BC:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-subbuild --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-subbuild/meshoptimizer-populate.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

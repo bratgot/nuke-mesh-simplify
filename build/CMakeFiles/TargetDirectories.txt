@@ -1,0 +1,7 @@
+C:/dev/nuke-mesh-simplify/build/CMakeFiles/MeshSimplify.dir
+C:/dev/nuke-mesh-simplify/build/CMakeFiles/INSTALL.dir
+C:/dev/nuke-mesh-simplify/build/CMakeFiles/ALL_BUILD.dir
+C:/dev/nuke-mesh-simplify/build/CMakeFiles/ZERO_CHECK.dir
+C:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-build/CMakeFiles/meshoptimizer.dir
+C:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-build/CMakeFiles/INSTALL.dir
+C:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-build/CMakeFiles/ALL_BUILD.dir

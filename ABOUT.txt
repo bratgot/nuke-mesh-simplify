@@ -1,0 +1,38 @@
+MeshSimplify for Nuke 14
+========================
+
+A free NDK plugin that simplifies and cleans up 3D geometry inside Nuke.
+UV- and seam-aware decimation powered by meshoptimizer, with a
+pin-silhouette mode that keeps sharp features (cube corners, beveled
+edges) intact while flattening dense areas. Optional coplanar tri-pair
+merger turns flat regions into quad polygons.
+
+Built against the classic GeoOp system, Windows + VS 2019, MIT-licensed
+deps throughout.
+
+Created by Marten Blumen.
+
+
+Installation
+------------
+
+1. Copy the MeshSimplify folder into your .nuke directory:
+
+       %USERPROFILE%\.nuke\MeshSimplify\
+
+2. Add the following two lines to your %USERPROFILE%\.nuke\menu.py
+   (create the file if it doesn't exist):
+
+       import nuke
+       nuke.pluginAddPath('./MeshSimplify')
+
+3. Restart Nuke.
+
+
+Usage
+-----
+
+Tab menu   ->  MeshSimplify
+Toolbar    ->  3D  ->  Modify  ->  MeshSimplify
+
+Click the '?' on the node's properties panel for full documentation.

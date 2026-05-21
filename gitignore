@@ -1,0 +1,35 @@
+# Build output
+build/
+out/
+cmake-build-*/
+
+# Distribution zips
+dist/
+
+# Download staging (deploy.ps1 picks files up from here)
+files/
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# Compiled binaries that might land outside build/
+*.dll
+*.lib
+*.exp
+*.pdb
+*.obj
+*.ilk
+
+# IDE folders
+.idea/
+.vscode/
+
+# OS junk
+Thumbs.db
+.DS_Store

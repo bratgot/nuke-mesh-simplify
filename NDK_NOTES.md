@@ -1,7 +1,9 @@
 # Nuke NDK Notes
 
-Hard-won gotchas, build rules, and architectural choices for Nuke 14 NDK
-plugin development on Windows. Every item below has cost a debugging
+Hard-won gotchas, build rules, and architectural choices for Nuke NDK
+plugin development (this copy was written for Nuke 14 on Windows; the
+maintained version, covering 14.1-17.1 and Linux, is
+`C:\dev\NukeDevRules\NDK_NOTES.md`). Every item below has cost a debugging
 round somewhere -- nothing is theoretical.
 
 Distilled from the NukeParticles project's `CLAUDE.md` plus discoveries
@@ -199,8 +201,16 @@ if (!uv) {
 }
 ```
 
-UV is per-corner (`Group_Vertices`), not per-point. Two corners that share
-a point but have different UVs are how UV seams are represented in Nuke.
+UV is usually per-corner (`Group_Vertices`). Two corners that share a point
+but have different UVs are how UV seams are represented in Nuke.
+
+**Correction (1.1):** the Cube of Nuke 15.1-16.0 emits `uv` on
+`Group_Points`, and `get_typed_attribute` returns it -- indexing it by vertex
+slot read past its end and crashed intermittently. Use
+`get_typed_group_attribute(Group_Vertices / Group_Points, ...)`, index point
+uvs by point, and bounds-check. Canonical write-up (and the Linux build
+recipe, the GeoOp stale-cache trap, the per-frame camera frustum):
+`C:\dev\NukeDevRules\NDK_NOTES.md` notes 3.6, 67-69.
 
 ### 3.7 SoA pointer invalidation
 

@@ -1,14 +1,16 @@
-MeshSimplify for Nuke 14
-========================
+MeshSimplify for Nuke 14.1 - 17.1
+=================================
 
-A free NDK plugin that simplifies and cleans up 3D geometry inside Nuke.
-UV- and seam-aware decimation powered by meshoptimizer, with a
-pin-silhouette mode that keeps sharp features (cube corners, beveled
-edges) intact while flattening dense areas. Optional coplanar tri-pair
-merger turns flat regions into quad polygons.
+A free NDK plugin that crops and simplifies 3D geometry inside Nuke.
 
-Built against the classic GeoOp system, Windows + VS 2019, MIT-licensed
-deps throughout.
+- Crop to a box (plug in a Cube or an Axis) and/or to a camera frustum with
+  overscan. In 'frame range' mode the frustum is sampled across the shot and
+  everything the camera sees at any frame is kept.
+- UV- and seam-aware decimation powered by meshoptimizer, with a
+  pin-silhouette mode that keeps sharp features intact.
+- Optional coplanar tri-pair merger turns flat regions into quads.
+
+Classic 3D system (GeoOp). Windows and Linux, MIT-licensed deps throughout.
 
 Created by Marten Blumen.
 
@@ -18,15 +20,21 @@ Installation
 
 1. Copy the MeshSimplify folder into your .nuke directory:
 
-       %USERPROFILE%\.nuke\MeshSimplify\
+       Windows:  %USERPROFILE%\.nuke\MeshSimplify\
+       Linux:    ~/.nuke/MeshSimplify/
 
-2. Add the following two lines to your %USERPROFILE%\.nuke\menu.py
-   (create the file if it doesn't exist):
+2. Add these two lines to init.py in that .nuke directory (create the file
+   if it doesn't exist):
 
        import nuke
        nuke.pluginAddPath('./MeshSimplify')
 
-3. Restart Nuke.
+3. Restart Nuke. The binary matching your Nuke version is picked
+   automatically.
+
+Upgrading from 1.0: delete MeshSimplify.dll from the .nuke folder itself and
+from .nuke\MeshSimplify\ (the binaries now live in per-version subfolders),
+and remove the pluginAddPath lines 1.0 added to menu.py.
 
 
 Usage
@@ -35,4 +43,5 @@ Usage
 Tab menu   ->  MeshSimplify
 Toolbar    ->  3D  ->  Modify  ->  MeshSimplify
 
+Inputs: geometry, 'cam' (optional camera), 'crop' (optional Cube / Axis).
 Click the '?' on the node's properties panel for full documentation.

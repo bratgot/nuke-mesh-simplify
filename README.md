@@ -1,99 +1,124 @@
-# MeshSimplify — Nuke 14 NDK plugin
+# MeshSimplify: Nuke NDK plugin (Nuke 14.1 - 17.1, Windows + Linux)
 
-UV- and seam-aware mesh simplification for Nuke 14 (classic 3D system).
-Wraps [meshoptimizer](https://github.com/zeux/meshoptimizer) (MIT) as a
-`ModifyGeo` op.
+Crop classic-3D geometry to a box / Cube and to a camera frustum, then
+UV- and seam-aware simplification with
+[meshoptimizer](https://github.com/zeux/meshoptimizer) (MIT), optionally
+merging flat triangle pairs into quads. A `GeoOp` (topology changes; see
+NDK_NOTES 3.1).
 
-## Build (Windows 11, Nuke 14)
+## Build
+
+Windows (VS2019 x64, every installed Nuke in one go; one `build-<ver>/` each):
 
 ```powershell
-cmake -G "Visual Studio 16 2019" -A x64 `
-      -DCMAKE_PREFIX_PATH="C:/Program Files/Nuke14.0v5" `
-      -DCMAKE_BUILD_TYPE=Release `
-      -B build
-cmake --build build --config Release
-copy build\Release\MeshSimplify.dll  $env:USERPROFILE\.nuke\
+scripts\build.bat                 # = powershell -ExecutionPolicy Bypass -File scripts\build_all.ps1
+scripts\build.bat -Install        # + cmake --install into %USERPROFILE%\.nuke
+scripts\build.bat -Versions 16.0v8 -Clean
+.\deploy.ps1 -Install -Package -Version 1.1.0   # build + install + zip
 ```
 
-In Nuke: `Tab` → MeshSimplify, or right-click the node graph and look
-under Geometry.
+Versions built by default: 14.1v8, 15.0v8, 15.1v10, 15.2v9, 16.0v8, 16.1v1,
+17.0v4, 17.1v1 (`C:\Program Files\Nuke<ver>`). Linux: see
+[docs/LINUX_BUILD.md](docs/LINUX_BUILD.md).
+
+Install layout (`cmake --install <build> --prefix ~/.nuke`):
+
+```
+.nuke/init.py                      # + nuke.pluginAddPath('./MeshSimplify')
+.nuke/MeshSimplify/init.py         # adds <major.minor>/ for the running Nuke
+.nuke/MeshSimplify/menu.py         # 3D > Modify > MeshSimplify
+.nuke/MeshSimplify/14.1/MeshSimplify.dll (.so on Linux)
+...
+```
+
+The install step also removes the v1.0 layout: `MeshSimplify.dll` directly in
+`.nuke/` or `.nuke/MeshSimplify/` (either would be loaded by every Nuke
+version ahead of the right one) and the old `pluginAddPath` block that
+`deploy.ps1` wrote into `.nuke/menu.py`.
+
+## Tests
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\test_all.ps1 [-Perf]
+```
+
+Runs `test/test_crop.py` headless (`-ti`) against each FRESH build dir: exact
+face counts for box / Cube / Axis crops, the frustum (aspect, overscan,
+window translate, rotated camera, near / far, behind-camera), the frame-range
+union and its hash (an off-frame key edit re-cooks), crop + simplify, object
+transform and uv survival. `test/perf.py` times a ~500k-triangle sphere.
+
+## Inputs
+
+| Input | |
+|---|---|
+| 0 (unlabelled) | geometry to process |
+| `cam` | optional classic camera: crop to its frustum |
+| `crop` | optional: a Cube / any geometry (each object's oriented bounding box) or an Axis (places `crop box`) |
 
 ## Knobs
 
-| Knob           | Default | Notes                                                 |
-|----------------|---------|-------------------------------------------------------|
-| target_ratio   | 0.5     | Fraction of triangles to keep. 1.0 = no change.       |
-| target_error   | 0.01    | Max normalized deviation. Stops early if exceeded.    |
-| uv_weight      | 1.0     | Penalty on UV distortion. 0 ignores UV.               |
-| lock_borders   | off     | Protect boundary edges (open meshes that mate elsewhere). |
-| aggressive     | off     | Sloppy simplifier: faster, ignores topology.          |
+| Knob | Default | Notes |
+|---|---|---|
+| target_ratio | 0.5 | Fraction of triangles to keep (after cropping). 1.0 = no simplification. |
+| target_error | 0.01 | Max normalized deviation. Stops early if exceeded. |
+| uv_weight | 1.0 | Penalty on UV distortion. 0 ignores UV. |
+| lock_borders | off | Protect open boundaries, including the edge a crop leaves. |
+| pin_silhouette / silhouette_angle | off / 30 | Lock vertices on sharp creases. |
+| aggressive | off | Sloppy simplifier: faster, ignores topology. |
+| ignore_uv_seams, prune_components | off | Flat-area handling. |
+| output_quads / quad_angle | off / 5 | Merge coplanar triangle pairs into quads. |
+| crop_camera | on | Crop to the `cam` frustum (no effect while `cam` is disconnected). |
+| overscan | 0 | Pixels added on every side of the script format (ScanlineRender units). |
+| clip_near_far | on | Also crop to the camera's near / far planes. |
+| crop_frames | current frame | `frame range`: keep faces seen at ANY sampled frame. |
+| use_script_range, crop_first / crop_last, crop_step | on, 1-100, 1 | Frames sampled in `frame range` mode. |
+| crop_box_enable / crop_box | off / unit box | Box crop (see the `crop` input). |
+| crop_test | touching | `touching` keeps faces that may overlap the region; `inside` only faces entirely inside. |
+
+### Crop details
+
+* Faces are kept or dropped whole, never cut. `touching` drops a face only
+  when all its corners lie outside one same plane of the region, so a big
+  ground-plane face spanning the frame survives.
+* Box AND camera: a face must pass both. Several crop objects or frames: a
+  face is kept if any of them keeps it.
+* Cropping runs before simplification, so the triangle budget goes to what
+  remains. With target_ratio 1 and quads off, kept faces pass through with
+  their original polygon layout (quads stay quads).
+* The camera is evaluated per frame through `node_input()` at that frame's
+  context, so parenting / look-at are honoured; lens values come from the
+  camera's knobs at that frame. Perspective cameras only. The geometry and the
+  crop box are taken at the current frame.
+* The resolved planes for every sampled frame go into the geometry hash, so
+  editing a camera key away from the current frame re-cooks. Cost: the camera
+  is validated at every sampled frame on each validate (measured ~0.5 s for
+  1000 frames of an animated camera on a 40k-face card; a static camera
+  collapses to one frustum, 0.02 s). Raise `crop_step` for long shots.
+* An unusable camera (orthographic, zero focal) skips the camera crop with a
+  warning instead of removing everything.
 
 ## Architecture
 
-Input GeoInfo → fat vertices (unique (point_index, uv) tuples; this
-exposes UV seams to meshoptimizer as topological discontinuities) →
-`meshopt_simplifyWithAttributes` with UV as a weighted attribute pair →
-fat-vertex compaction → rebuilt PointList + Triangle primitives +
-per-corner UV attribute.
-
-`meshopt_simplifySloppy` is selected when `aggressive` is on — fast LOD
-generation, not seam-preserving.
-
-## Testing strategy
-
-The simplifier is pure and deterministic, so test by snapshot:
-
-1. **A simple quad with a UV seam.** Two triangles, four points, but the
-   UV uses 6 vertex slots because two points are on the seam (each has
-   two UVs). Run with `target_ratio=1.0` (early-exit path; verify the
-   mesh round-trips). Run with `target_ratio=0.5` (expect collapse to a
-   degenerate but valid result, or skipped per the safety check).
-2. **A textured sphere from GeoSphere.** Connect a Read with a checker
-   texture, simplify to 0.3, view in 3D viewer with the texture applied.
-   The checker pattern should remain continuous across the original UV
-   seam at the sphere's longitudinal cut.
-3. **A scanned mesh from a ReadGeo.** High-poly with no UVs (or with
-   UVs and seams). Verify performance: 1M tris → ~50ms target on the
-   non-aggressive path.
-
-## Caveats / what to verify in your tree
-
-These are the spots I had to make decisions without your specific
-NDK headers in front of me. Quick verifications when you build:
-
-1. **`Primitive::vertex_offset()` vs `vertex_offset_`.** Some NDK
-   versions expose this as a public member, others as a function. If
-   the build errors on `prim->vertex_offset()`, change to
-   `prim->vertex_offset_` (member access).
-2. **`Attribute::resize(n)` signature.** If the attribute API in your
-   Nuke 14 minor version doesn't expose `resize`, the alternative is
-   to delete and recreate the attribute via `writable_attribute` —
-   that path always returns a fresh, correctly-sized attribute given
-   the current primitive count.
-3. **UV Vector4 vs Vector2.** Nuke historically stores UVs as Vector4
-   (s, t, r, q). If your input mesh provides UVs as Vector2 instead,
-   change `VECTOR4_ATTRIB` to `VECTOR2_ATTRIB` in both the read and
-   write sides, and drop the `invq` unprojection step.
-4. **`Op::Description` category string.** I used `"Geometry/MeshSimplify"`
-   so the node lands under Geometry in the Tab menu. Adjust to taste.
+Input GeoInfo -> faces as flat corner lists (point + uv) -> crop flags
+(per-volume vertex outside-bitmasks, AND / OR per face) -> either pass-through
+of kept faces, or fan triangulation -> fat vertices (unique (point, uv) via
+`meshopt_generateVertexRemap`; UV seams become topological breaks) ->
+`meshopt_simplifyWithAttributes` (or `meshopt_simplifySloppy`) -> per-point
+compaction -> optional quad merge (sorted edge list) -> rebuilt PointList +
+Triangle / Polygon primitives + per-corner uv. Each object's matrix,
+material, render / display mode and selectable flag are restored after the
+rebuild (they were lost before 1.1, undoing an upstream TransformGeo).
 
 ## Known limitations
 
-- **Per-vertex normals are dropped.** Nuke usually recomputes them
-  downstream; if you need preserved normals, add a third attribute
-  pair to `meshopt_simplifyWithAttributes` and write back a Group_Vertices
-  "N" attribute.
-- **Per-vertex colors and arbitrary attributes are dropped.** Same
-  pattern as normals.
-- **Concave n-gons fan-triangulate to bad geometry.** Nuke rarely
-  produces these; if your inputs include them, swap the fan
-  triangulator for an ear-clipper.
-- **`lock_borders` only applies to the non-aggressive path.** The
-  sloppy simplifier doesn't expose a border-lock option.
+- Per-vertex normals, colours and other attributes are dropped (uv is kept).
+- Concave n-gons fan-triangulate to bad geometry when simplifying.
+- `lock_borders` only applies to the non-aggressive path.
+- The 3D viewer does not draw the crop box or frustum; view the `crop` /
+  `cam` nodes alongside.
 
 ## License
 
-Plugin code: MIT.
-meshoptimizer: MIT (https://github.com/zeux/meshoptimizer).
-Nuke NDK: Foundry's licence terms apply to the resulting `.dll` only
-when linked against `DDImage`.
+Plugin code: MIT. meshoptimizer: MIT (https://github.com/zeux/meshoptimizer),
+reproduced in LICENSE, which ships with every package.

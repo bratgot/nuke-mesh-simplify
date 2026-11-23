@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"C:/dev/nuke-mesh-simplify/build/_deps/meshoptimizer-subbuild/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

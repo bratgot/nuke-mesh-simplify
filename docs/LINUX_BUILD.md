@@ -5,14 +5,13 @@
 | | |
 |---|---|
 | Windows x64 | Built and tested headless (`scripts\test_all.ps1`) on 14.1v8, 15.0v8, 15.1v10, 15.2v9, 16.0v8, 16.1v1, 17.0v4, 17.1v1 |
-| Linux x64 | **Configured, compiled, linked and installed with the real CMakeLists.txt** on all eight with g++ 11.5 / CMake 3.26 (AlmaLinux 9 / WSL), using a stub NukeConfig.cmake over the Windows installs' headers (`scripts/linux_compile_check.sh`). **Not yet built against Linux Nuke installs or load-tested.** |
+| Linux x64 | Built with `scripts/build_linux_docker.sh` (Rocky Linux 8, gcc-toolset-11) from main @ db09b49 for all eight; needs only GLIBC_2.14 / GLIBCXX_3.4.21 (RHEL / Rocky 7+), no RPATH; `test/test_crop.py` 31/31 on every version (release `v1.1-linux`). `scripts/linux_compile_check.sh` remains the no-Linux-Nuke check from Windows / WSL. |
 
-A Linux MODULE links happily with every DDImage symbol undefined, so the
-check proves the code, the CMake Linux settings (file name, PIC, old ABI for
-14.x, Release, no RPATH, private meshopt symbols) and the install layout --
-not that Nuke loads the result (NukeDevRules NDK_NOTES 57). Ship
-Linux binaries only from the container build below, against real Linux Nuke
-installs.
+A Linux MODULE links happily with every DDImage symbol undefined, so
+`linux_compile_check.sh` alone proves the code, the CMake Linux settings and
+the install layout -- not that Nuke loads the result (NukeDevRules
+NDK_NOTES 57). Ship Linux binaries only from the container build below,
+against real Linux Nuke installs.
 
 ## Release build
 

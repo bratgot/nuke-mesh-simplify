@@ -1,0 +1,235 @@
+#! C:/Program Files/Nuke17.1v1/nuke-17.1.1.dll -nx
+version 17.1 v1
+Root {
+ inputs 0
+ gsv  {
+  __default__ {
+  } 
+}
+ name C:/dev/nuke-mesh-simplify/Test-files/MeshSimplify_demo.nk
+ format "1920 1080 0 0 1920 1080 1 HD_1080"
+ proxy_type scale
+ proxy_format "1024 778 0 0 1024 778 1 1K_Super_35(full-ap)"
+ colorManagement Nuke
+ workingSpaceLUT 0
+ monitorLut sRGB
+ monitorOutLUT rec709
+ int8Lut 0
+ int16Lut 0
+ logLut 0
+ floatLut 0
+}
+BackdropNode {
+ inputs 0
+ name BackdropNode1
+ label "MeshSimplify 1.1 crop demo\nViewer 1: render  2: camera crop  3: box crop  4: input\nTab in the Viewer for 3D; scrub to see the crop cover the whole move"
+ note_font_size 14
+ xpos 60
+ ypos -130
+ bdwidth 380
+ bdheight 260
+}
+ColorWheel {
+ inputs 0
+ name ColorWheel1
+ xpos 200
+ ypos -400
+}
+set Nf11f0f00 [stack 0]
+Sphere {
+ rows 150
+ columns 150
+ translate {160 4 -60}
+ uniform_scale 4
+ name Sphere9
+ xpos 1080
+ ypos -300
+}
+push $Nf11f0f00
+Sphere {
+ rows 150
+ columns 150
+ translate {120 4 -60}
+ uniform_scale 4
+ name Sphere8
+ xpos 970
+ ypos -300
+}
+push $Nf11f0f00
+Sphere {
+ rows 150
+ columns 150
+ translate {80 4 -60}
+ uniform_scale 4
+ name Sphere7
+ xpos 860
+ ypos -300
+}
+push $Nf11f0f00
+Sphere {
+ rows 150
+ columns 150
+ translate {40 4 -60}
+ uniform_scale 4
+ name Sphere6
+ xpos 750
+ ypos -300
+}
+push $Nf11f0f00
+Sphere {
+ rows 150
+ columns 150
+ translate {0 4 -60}
+ uniform_scale 4
+ name Sphere5
+ xpos 640
+ ypos -300
+}
+push $Nf11f0f00
+Sphere {
+ rows 150
+ columns 150
+ translate {-40 4 -60}
+ uniform_scale 4
+ name Sphere4
+ xpos 530
+ ypos -300
+}
+push $Nf11f0f00
+Sphere {
+ rows 150
+ columns 150
+ translate {-80 4 -60}
+ uniform_scale 4
+ name Sphere3
+ xpos 420
+ ypos -300
+}
+push $Nf11f0f00
+Sphere {
+ rows 150
+ columns 150
+ translate {-120 4 -60}
+ uniform_scale 4
+ name Sphere2
+ xpos 310
+ ypos -300
+}
+push $Nf11f0f00
+Sphere {
+ rows 150
+ columns 150
+ translate {-160 4 -60}
+ uniform_scale 4
+ name Sphere1
+ xpos 200
+ ypos -300
+}
+CheckerBoard2 {
+ inputs 0
+ name CheckerBoard1
+ xpos 0
+ ypos -400
+}
+Card2 {
+ image_aspect false
+ rows 400
+ columns 400
+ rotate {-90 0 0}
+ uniform_scale 1000
+ control_points {3 3 3 6 
+
+1 {-0.5 -0.5 0} 1 {0.1666666865 0 0} 1 {0 0 0} 1 {0 0.1666666865 0} 1 {0 0 0} 1 {0 0 0} 
+1 {0 -0.5 0} 1 {0.1666666716 0 0} 1 {-0.1666666716 0 0} 1 {0 0.1666666865 0} 1 {0 0 0} 1 {0.5 0 0} 
+1 {0.5 -0.5 0} 1 {0 0 0} 1 {-0.1666666865 0 0} 1 {0 0.1666666865 0} 1 {0 0 0} 1 {1 0 0} 
+1 {-0.5 0 0} 1 {0.1666666865 0 0} 1 {0 0 0} 1 {0 0.1666666716 0} 1 {0 -0.1666666716 0} 1 {0 0.5 0} 
+1 {0 0 0} 1 {0.1666666716 0 0} 1 {-0.1666666716 0 0} 1 {0 0.1666666716 0} 1 {0 -0.1666666716 0} 1 {0.5 0.5 0} 
+1 {0.5 0 0} 1 {0 0 0} 1 {-0.1666666865 0 0} 1 {0 0.1666666716 0} 1 {0 -0.1666666716 0} 1 {1 0.5 0} 
+1 {-0.5 0.5 0} 1 {0.1666666865 0 0} 1 {0 0 0} 1 {0 0 0} 1 {0 -0.1666666865 0} 1 {0 1 0} 
+1 {0 0.5 0} 1 {0.1666666716 0 0} 1 {-0.1666666716 0 0} 1 {0 0 0} 1 {0 -0.1666666865 0} 1 {0.5 1 0} 
+1 {0.5 0.5 0} 1 {0 0 0} 1 {-0.1666666865 0 0} 1 {0 0 0} 1 {0 -0.1666666865 0} 1 {1 1 0} }
+ name Card1
+ label "ground 1000 x 1000: 160k quads"
+ xpos 0
+ ypos -300
+}
+MergeGeo {
+ inputs 10
+ name MergeGeo1
+ label "~360k faces in"
+ xpos 300
+ ypos -180
+}
+set Nf1290500 [stack 0]
+Cube {
+ inputs 0
+ translate {-60 0 -60}
+ scaling {100 30 60}
+ name Cube1
+ label "crop region"
+ xpos 100
+ ypos -60
+}
+push 0
+push $Nf1290500
+MeshSimplify {
+ inputs 3
+ target_ratio 1
+ crop_camera false
+ crop_box_enable true
+ name MeshSimplify_box_crop
+ label "Cube crop, quads kept"
+ xpos 100
+ ypos 60
+}
+Camera2 {
+ inputs 0
+ translate {{curve x1 -25 x100 25} {curve x1 4 x100 4} {curve x1 20 x100 20}}
+ rotate {{curve x1 -6 x100 -6} {curve x1 25 x100 -25} {curve}}
+ focal 35
+ far 150
+ name Camera1
+ label "pans frames 1-100"
+ xpos 650
+ ypos -180
+}
+set Nf1290a00 [stack 0]
+push $Nf1290500
+MeshSimplify {
+ inputs 2
+ lock_borders true
+ overscan 100
+ crop_frames "frame range"
+ name MeshSimplify_camera_crop
+ label "frustum union 1-100\n+100px overscan, ratio 0.5"
+ xpos 300
+ ypos -60
+}
+set Nf1290f00 [stack 0]
+push $Nf1290a00
+push $Nf1290f00
+Scene {
+ name Scene1
+ xpos 300
+ ypos 60
+}
+Constant {
+ inputs 0
+ color {0.05 0.05 0.06 1}
+ name Constant1
+ xpos 520
+ ypos 40
+}
+ScanlineRender {
+ inputs 3
+ name ScanlineRender1
+ xpos 300
+ ypos 160
+}
+Viewer {
+ inputs 4
+ render_settings_schema false
+ name Viewer1
+ xpos 300
+ ypos 280
+}

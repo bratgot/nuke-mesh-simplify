@@ -42,3 +42,4 @@ test/out/
 
 # Nuke autosave / backup
 *.nk~
+*.autosave

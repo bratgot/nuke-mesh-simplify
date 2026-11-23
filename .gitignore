@@ -39,3 +39,6 @@ build-*/
 linux-bin/
 linux-bin.tar.gz
 test/out/
+
+# Nuke autosave / backup
+*.nk~
